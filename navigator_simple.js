@@ -21,12 +21,14 @@ class FirstPage extends Component {
    * @param name 参数
    * @private
    */
-  _navigate(name) {
+  _navigate(name, type='Normal') {
     this.props.navigator.push({
-      name: 'SecondPage',
+      //component: 'SecondPage',
+      component: SecondPage,
       passProps: {
         name: name
-      }
+      },
+      type: type
     })
   }
 
@@ -41,11 +43,17 @@ class FirstPage extends Component {
         </View>
         <TouchableOpacity
           style={styles.button}
-          onPress={()=>this._navigate('你好! (来源第一页)')}>
+          onPress={()=>this._navigate('你好! (来源第一页:右出)')}>
           <Text style={styles.buttonText}>
-            {'跳转至第二页'}
+            {'跳转至第二页(右出)'}
           </Text>
-
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={()=>this._navigate('你好! (来源第一页:底出)', 'Modal')}>
+          <Text style={styles.buttonText}>
+            {'跳转至第二页(底部)'}
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -74,6 +82,43 @@ class SecondPage extends Component {
   }
 }
 
+var NavigationBarRouteMapper = {
+  LeftButton(route, navigator, index, navState) {
+    if (index > 0) {
+      return (
+        <TouchableOpacity
+          underlayColor='transparent'
+          onPress={() => {if (index > 0) {navigator.pop()}}}>
+          <Text style={styles.leftNavButtonText}>
+            后退
+          </Text>
+        </TouchableOpacity>
+
+      );
+    } else {
+      return null;
+    }
+  },
+  RightButton(route, navigator, index, navState) {
+    if (route.onPress)
+      return (
+        <TouchableOpacity
+          onPress={() => route.onPress()}>
+          <Text style={styles.rightNavButtonText}>
+            {rount.rightText || '右键'}
+            </Text>
+        </TouchableOpacity>
+      );
+  },
+  Title(route, navigator, index, navState) {
+    return (
+      <Text style={styles.title}>
+        应用标题
+      </Text>
+    );
+  }
+}
+
 // 主模块
 class SimpleView extends Component {
   /**
@@ -82,19 +127,38 @@ class SimpleView extends Component {
    * @param navigator 导航器
    * @returns {XML} 页面
    */
+  //renderScene(route, navigator) {
+  //  if (route.name == 'FirstPage') {
+  //    return <FirstPage navigator={navigator} {...route.passProps}/>
+  //  } else if (route.name == 'SecondPage') {
+  //    return <SecondPage navigator={navigator} {...route.passProps}/>
+  //  }
+  //}
+
+  /**
+   * 使用动态页面加载
+   * @param route 路由
+   * @param navigator 导航器
+   * @returns {XML} 页面
+   */
   renderScene(route, navigator) {
-    if (route.name == 'FirstPage') {
-      return <FirstPage navigator={navigator} {...route.passProps}/>
-    } else if (route.name == 'SecondPage') {
-      return <SecondPage navigator={navigator} {...route.passProps}/>
+    return <route.component navigator={navigator} {...route.passProps} />;
+  }
+
+  configureScene(route, routeStack) {
+    if (route.type == 'Modal') {
+      return Navigator.SceneConfigs.FloatFromBottom;
     }
+    return Navigator.SceneConfigs.PushFromRight;
   }
 
   render() {
     return (
       <Navigator
         style={{flex:1}}
-        initialRoute={{name: 'FirstPage'}}
+        //initialRoute={{name: 'FirstPage'}}
+        initialRoute={{component: FirstPage}}
+        configureScene={this.configureScene}
         renderScene={this.renderScene}/>
     );
   }
@@ -129,6 +193,23 @@ var styles = StyleSheet.create({
   // 按钮文字
   buttonText: {
     fontSize: 18
+  },
+  // 左面导航按钮
+  leftNavButtonText: {
+    fontSize: 18,
+    marginLeft: 13,
+    marginTop: 2
+  },
+  // 右面导航按钮
+  rightNavButtonText: {
+    fontSize: 18,
+    marginRight: 13,
+    marginTop: 2
+  },
+  // 标题
+  title: {
+    marginTop: 4,
+    fontSize: 16
   }
 });
 
