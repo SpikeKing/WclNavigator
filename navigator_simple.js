@@ -6,6 +6,7 @@
 var React = require('react-native'); // 引用React库
 
 var {
+  Component,
   StyleSheet,
   Text,
   View,
@@ -13,18 +14,21 @@ var {
   TouchableOpacity
   } = React; // 使用简写
 
-var FirstPage = React.createClass({
+// 使用Component的好处是, 可以自动生成注释
+class FirstPage extends Component {
   /**
    * 给Navigator传递参数, Id是name, 参数是name.
+   * @param name 参数
+   * @private
    */
-    _navigate(name) {
+  _navigate(name) {
     this.props.navigator.push({
       name: 'SecondPage',
       passProps: {
         name: name
       }
     })
-  },
+  }
 
   render() {
     // 点击按钮使用Home页面入栈
@@ -46,11 +50,11 @@ var FirstPage = React.createClass({
       </View>
     );
   }
-});
+}
 
-var SecondPage = React.createClass({
+//var SecondPage = React.createClass({
+class SecondPage extends Component {
   render() {
-    // 点击按钮出栈
     return (
       <View style={styles.container}>
         <View style={styles.heading}>
@@ -68,16 +72,23 @@ var SecondPage = React.createClass({
       </View>
     );
   }
-});
+}
 
-var SimpleApp = React.createClass({
+// 主模块
+class SimpleView extends Component {
+  /**
+   * 渲染场景, 通过不同参数, 设置不同页面
+   * @param route 路由, 场景信息
+   * @param navigator 导航器
+   * @returns {XML} 页面
+   */
   renderScene(route, navigator) {
     if (route.name == 'FirstPage') {
       return <FirstPage navigator={navigator} {...route.passProps}/>
     } else if (route.name == 'SecondPage') {
       return <SecondPage navigator={navigator} {...route.passProps}/>
     }
-  },
+  }
 
   render() {
     return (
@@ -87,7 +98,7 @@ var SimpleApp = React.createClass({
         renderScene={this.renderScene}/>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -121,4 +132,4 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = SimpleApp;
+module.exports = SimpleView; // 导出模块

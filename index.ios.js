@@ -6,6 +6,6 @@ var {
   AppRegistry,
 } = React;
 
-var SimpleApp = require('./navigator_simple.js');
+var SimpleView = require('./navigator_simple.js');
 
-AppRegistry.registerComponent('WclNavigator', () => SimpleApp);
+AppRegistry.registerComponent('WclNavigator', () => SimpleView);
