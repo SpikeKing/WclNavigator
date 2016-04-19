@@ -60,7 +60,7 @@ class FirstPage extends Component {
   }
 }
 
-//var SecondPage = React.createClass({
+// 第二页
 class SecondPage extends Component {
   render() {
     return (
@@ -85,20 +85,6 @@ class SecondPage extends Component {
 // 主模块
 class SimpleView extends Component {
   /**
-   * 渲染场景, 通过不同参数, 设置不同页面
-   * @param route 路由, 场景信息
-   * @param navigator 导航器
-   * @returns {XML} 页面
-   */
-  //renderScene(route, navigator) {
-  //  if (route.name == 'FirstPage') {
-  //    return <FirstPage navigator={navigator} {...route.passProps}/>
-  //  } else if (route.name == 'SecondPage') {
-  //    return <SecondPage navigator={navigator} {...route.passProps}/>
-  //  }
-  //}
-
-  /**
    * 使用动态页面加载
    * @param route 路由
    * @param navigator 导航器
@@ -119,7 +105,6 @@ class SimpleView extends Component {
     return (
       <Navigator
         style={{flex:1}}
-        //initialRoute={{name: 'FirstPage'}}
         initialRoute={{component: FirstPage}}
         configureScene={this.configureScene}
         renderScene={this.renderScene}/>
@@ -156,23 +141,6 @@ var styles = StyleSheet.create({
   // 按钮文字
   buttonText: {
     fontSize: 18
-  },
-  // 左面导航按钮
-  leftNavButtonText: {
-    fontSize: 18,
-    marginLeft: 13,
-    marginTop: 2
-  },
-  // 右面导航按钮
-  rightNavButtonText: {
-    fontSize: 18,
-    marginRight: 13,
-    marginTop: 2
-  },
-  // 标题
-  title: {
-    marginTop: 4,
-    fontSize: 16
   }
 });
 
