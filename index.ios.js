@@ -9,4 +9,5 @@ var {
 var SimpleView = require('./navigator_simple.js');
 var UniformView = require('./navigator_uniform.js');
 
-AppRegistry.registerComponent('WclNavigator', () => UniformView);
+// 可以选择添加页面
+AppRegistry.registerComponent('WclNavigator', () => SimpleView);
