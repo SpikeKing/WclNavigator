@@ -16,18 +16,18 @@ var {
 
 // 使用Component的好处是, 可以自动生成注释
 class FirstPage extends Component {
-  /**
-   * 给Navigator传递参数, Id是name, 参数是name.
-   * @param name 参数
-   * @private
-   */
-  _navigate(name, type = 'Normal') {
+  onPress() {
+    alert("我是Spike!");
+  }
+
+  gotoNext(name, type = 'Normal') {
     this.props.navigator.push({
-      //component: 'SecondPage',
       component: SecondPage,
       passProps: {
-        name: name
+        id: name
       },
+      onPress: this.onPress,
+      rightText: 'ALERT!',
       type: type
     })
   }
@@ -36,21 +36,16 @@ class FirstPage extends Component {
     // 点击按钮使用Home页面入栈
     return (
       <View style={styles.container}>
-        <View style={styles.heading}>
-          <Text style={styles.headText}>
-            {'第一页'}
-          </Text>
-        </View>
         <TouchableOpacity
           style={styles.button}
-          onPress={()=>this._navigate('你好! (来源第一页:右出)')}>
+          onPress={()=>this.gotoNext('第一页')}>
           <Text style={styles.buttonText}>
             {'跳转至第二页(右出)'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={()=>this._navigate('你好! (来源第一页:底出)', 'Modal')}>
+          onPress={()=>this.gotoNext('第一页', 'Modal')}>
           <Text style={styles.buttonText}>
             {'跳转至第二页(底部)'}
           </Text>
@@ -65,16 +60,14 @@ class SecondPage extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.heading}>
-          <Text style={styles.headText}>
-            第二页: {this.props.name}
-          </Text>
-        </View>
         <TouchableOpacity
           style={styles.button}
           onPress={()=>this.props.navigator.pop()}>
           <Text style={styles.buttonText}>
             返回上一页
+          </Text>
+          <Text style={styles.title}>
+            来源: {this.props.id}
           </Text>
         </TouchableOpacity>
       </View>
@@ -82,22 +75,51 @@ class SecondPage extends Component {
   }
 }
 
-// 主模块
-class SimpleView extends Component {
-  /**
-   * 渲染场景, 通过不同参数, 设置不同页面
-   * @param route 路由, 场景信息
-   * @param navigator 导航器
-   * @returns {XML} 页面
-   */
-  //renderScene(route, navigator) {
-  //  if (route.name == 'FirstPage') {
-  //    return <FirstPage navigator={navigator} {...route.passProps}/>
-  //  } else if (route.name == 'SecondPage') {
-  //    return <SecondPage navigator={navigator} {...route.passProps}/>
-  //  }
-  //}
+// 导航栏的Mapper
+var NavigationBarRouteMapper = {
+  LeftButton(route, navigator, index, navState) {
+    if (index > 0) {
+      return (
+        <View style={styles.heading}>
+          <TouchableOpacity
+            underlayColor='transparent'
+            onPress={() => {if (index > 0) {navigator.pop()}}}>
+            <Text style={styles.leftNavButtonText}>
+              后退
+            </Text>
+          </TouchableOpacity>
+        </View>
+      );
+    } else {
+      return null;
+    }
+  },
+  RightButton(route, navigator, index, navState) {
+    if (route.onPress)
+      return (
+        <View style={styles.heading}>
+          <TouchableOpacity
+            onPress={() => route.onPress()}>
+            <Text style={styles.rightNavButtonText}>
+              {route.rightText || '右键'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      );
+  },
+  Title(route, navigator, index, navState) {
+    return (
+      <View style={styles.heading}>
+        <Text style={styles.title}>
+          应用标题
+        </Text>
+      </View>
+    );
+  }
+};
 
+// 主模块
+class UniformView extends Component {
   /**
    * 使用动态页面加载
    * @param route 路由
@@ -120,25 +142,29 @@ class SimpleView extends Component {
       <Navigator
         style={{flex:1}}
         //initialRoute={{name: 'FirstPage'}}
-        initialRoute={{component: FirstPage}}
+        initialRoute={{name: 'FirstPage', component: FirstPage}}
         configureScene={this.configureScene}
-        renderScene={this.renderScene}/>
+        renderScene={this.renderScene}
+        navigationBar={
+          <Navigator.NavigationBar
+            style={styles.nav}
+            routeMapper={NavigationBarRouteMapper}/>}
+        />
     );
   }
 }
 
 var styles = StyleSheet.create({
   container: {
-    flex: 1,
-    marginTop: 20
+    flex: 4,
+    marginTop: 100,
+    flexDirection: 'column'
   },
   // 导航栏
   heading: {
-    height: 44,
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center', // 内容居中显示
-    backgroundColor: '#ff1046',
-    marginBottom: 10
+    justifyContent: 'center' // 内容居中显示
   },
   // 导航栏文字
   headText: {
@@ -167,13 +193,16 @@ var styles = StyleSheet.create({
   rightNavButtonText: {
     fontSize: 18,
     marginRight: 13,
-    marginTop: 2
   },
   // 标题
   title: {
-    marginTop: 4,
     fontSize: 16
+  },
+  // 导航
+  nav: {
+    height: 60,
+    backgroundColor: '#efefef'
   }
 });
 
-module.exports = SimpleView; // 导出模块
+module.exports = UniformView; // 导出模块
