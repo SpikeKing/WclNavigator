@@ -17,13 +17,12 @@ var {
 // 使用Component的好处是, 可以自动生成注释
 class FirstPage extends Component {
   /**
-   * 给Navigator传递参数, Id是name, 参数是name.
+   * 给Navigator传递参数
    * @param name 参数
    * @private
    */
   _navigate(name, type = 'Normal') {
     this.props.navigator.push({
-      //component: 'SecondPage',
       component: SecondPage,
       passProps: {
         name: name
@@ -50,7 +49,7 @@ class FirstPage extends Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={()=>this._navigate('你好! (来源第一页:底出)', 'Modal')}>
+          onPress={()=>this._navigate('你好! (来源第一页:底出)', 'Bottom')}>
           <Text style={styles.buttonText}>
             {'跳转至第二页(底部)'}
           </Text>
@@ -60,7 +59,7 @@ class FirstPage extends Component {
   }
 }
 
-// 第二页
+// 第二页, 点击跳出返回第一页
 class SecondPage extends Component {
   render() {
     return (
@@ -94,11 +93,31 @@ class SimpleView extends Component {
     return <route.component navigator={navigator}  {...route.passProps} />;
   }
 
+  /**
+   * 渲染场景, 通过不同参数, 设置不同页面
+   * @param route 路由, 场景信息
+   * @param navigator 导航器
+   * @returns {XML} 页面
+   */
+  //renderScene(route, navigator) {
+  //  if (route.name == 'FirstPage') {
+  //    return <FirstPage navigator={navigator} {...route.passProps}/>
+  //  } else if (route.name == 'SecondPage') {
+  //    return <SecondPage navigator={navigator} {...route.passProps}/>
+  //  }
+  //}
+
+  /**
+   * 配置场景动画
+   * @param route 路由
+   * @param routeStack 路由栈
+   * @returns {*} 动画
+   */
   configureScene(route, routeStack) {
-    if (route.type == 'Modal') {
-      return Navigator.SceneConfigs.FloatFromBottom;
+    if (route.type == 'Bottom') {
+      return Navigator.SceneConfigs.FloatFromBottom; // 底部弹出
     }
-    return Navigator.SceneConfigs.PushFromRight;
+    return Navigator.SceneConfigs.PushFromRight; // 右侧弹出
   }
 
   render() {
